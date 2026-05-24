@@ -1,0 +1,38 @@
+{
+  "hero": { "x": 50, "y": 400 },
+  "door": { "x": 920, "y": 114 },
+  "key": { "x": 450, "y": 100 },
+  "star": { "x": 900, "y": 350 },
+  "platforms": [
+    { "image": "ground", "x": 0, "y": 462, "repeat": 10 },
+    { "image": "grass:4x1", "x": 200, "y": 380 },
+    { "image": "grass:2x1", "x": 350, "y": 300 },
+    { "image": "grass:4x1", "x": 400, "y": 150 },
+    { "image": "grass:4x1", "x": 550, "y": 250 },
+    { "image": "grass:2x1", "x": 700, "y": 350 },
+    { "image": "grass:4x1", "x": 800, "y": 160 },
+    { "image": "grass:8x1", "x": 850, "y": 160 }
+  ],
+  "moving_platforms": [
+    { "image": "platform_move", "x": 100, "y": 300, "moveY": -80, "speed": 50 },
+    { "image": "platform_move", "x": 600, "y": 400, "moveX": 120, "speed": 70 }
+  ],
+  "coins": [
+    { "x": 220, "y": 350 }, { "x": 260, "y": 350 },
+    { "x": 370, "y": 270 },
+    { "x": 420, "y": 120 }, { "x": 460, "y": 120 },
+    { "x": 570, "y": 220 }, { "x": 610, "y": 220 },
+    { "x": 720, "y": 320 },
+    { "x": 870, "y": 130 }, { "x": 910, "y": 130 }
+  ],
+  "enemies": [
+    { "type": "ronin", "x": 250, "y": 350 },
+    { "type": "ronin", "x": 570, "y": 220 },
+    { "type": "ronin", "x": 870, "y": 130 },
+    { "type": "bat", "x": 300, "y": 200 },
+    { "type": "bat", "x": 500, "y": 180 },
+    { "type": "bat", "x": 700, "y": 200 },
+    { "type": "bat", "x": 800, "y": 250 },
+    { "type": "oni", "x": 650, "y": 320 }
+  ]
+}
