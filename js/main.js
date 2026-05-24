@@ -1,5 +1,5 @@
 window.onload = function () {
-  var game = new Phaser.Game(960, 540, Phaser.AUTO, 'game');
+  window.game = new Phaser.Game(960, 540, Phaser.AUTO, 'game');
   game.state.add('Boot', NS.Boot);
   game.state.add('Preloader', NS.Preloader);
   game.state.add('MainMenu', NS.MainMenu);
