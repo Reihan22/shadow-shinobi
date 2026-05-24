@@ -75,8 +75,11 @@ NS.Game.prototype = {
   update: function () {
     if (!this.hero) return;
 
-    // Skip update during intro
-    if (this._introActive) return;
+    // Skip game logic during intro, but keep hero-platform collision
+    if (this._introActive) {
+      this.game.physics.arcade.collide(this.hero, this.platforms);
+      return;
+    }
 
     // Parallax scrolling
     if (this._bgFar) this._bgFar.tilePosition.x = this.game.camera.x * 0.05;
@@ -102,6 +105,11 @@ NS.Game.prototype = {
       this.game.physics.arcade.overlap(this.hero, this.spikes, function () {
         if (!this.invincible) NS.Player.kill(this);
       }, null, this);
+    }
+
+    // Out of bounds — hero fell below world
+    if (this.hero.alive && this.hero.y > this.game.world.height + 32) {
+      NS.Player.kill(this);
     }
 
     // Kunai input
