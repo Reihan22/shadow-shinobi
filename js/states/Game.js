@@ -29,6 +29,23 @@ NS.Game.prototype = {
 
     this.game.world.setBounds(0, 0, 3000, 540);
 
+    // Parallax background layers
+    var bgFar = this.game.add.tileSprite(0, 0, 960, 540, 'bg_far');
+    bgFar.fixedToCamera = true;
+    bgFar.tilePosition.x = 0;
+    this.bg.add(bgFar);
+    this._bgFar = bgFar;
+
+    var bgMid = this.game.add.tileSprite(0, 0, 960, 540, 'bg_mid');
+    bgMid.fixedToCamera = true;
+    this.bg.add(bgMid);
+    this._bgMid = bgMid;
+
+    var bgNear = this.game.add.tileSprite(0, 0, 960, 540, 'bg_near');
+    bgNear.fixedToCamera = true;
+    this.bg.add(bgNear);
+    this._bgNear = bgNear;
+
     // Populate LevelManager.LEVELS from preloaded JSON cache
     if (NS.LevelManager.LEVELS.length === 0) {
       for (var i = 1; i <= 5; i++) {
@@ -52,6 +69,11 @@ NS.Game.prototype = {
 
   update: function () {
     if (!this.hero) return;
+
+    // Parallax scrolling
+    if (this._bgFar) this._bgFar.tilePosition.x = this.game.camera.x * 0.05;
+    if (this._bgMid) this._bgMid.tilePosition.x = this.game.camera.x * 0.2;
+    if (this._bgNear) this._bgNear.tilePosition.x = this.game.camera.x * 0.4;
 
     // Collisions
     this.game.physics.arcade.collide(this.hero, this.platforms);
