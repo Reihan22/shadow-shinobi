@@ -204,7 +204,7 @@ NS.MainMenu.prototype = {
 
     // Controls hint
     var ctrlStyle = { font: '13px monospace', fill: '#484f58' };
-    var ctrl = g.add.text(cx, H - 40, '← → Move   ↑/SPACE Jump   X Throw Kunai', ctrlStyle);
+    var ctrl = g.add.text(cx, H - 40, '← → Move   ↑/SPACE Jump   Z Dash   X Throw Kunai', ctrlStyle);
     ctrl.anchor.set(0.5);
     ctrl.alpha = 0.7;
 

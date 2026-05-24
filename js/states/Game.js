@@ -32,7 +32,6 @@ NS.Game.prototype = {
     // Parallax background layers
     var bgFar = this.game.add.tileSprite(0, 0, 960, 540, 'bg_far');
     bgFar.fixedToCamera = true;
-    bgFar.tilePosition.x = 0;
     this.bg.add(bgFar);
     this._bgFar = bgFar;
 
@@ -59,21 +58,32 @@ NS.Game.prototype = {
       this.heroSpawnX = levelData.hero.x;
       this.heroSpawnY = levelData.hero.y;
     }
+
     NS.HUD.create(this);
     NS.AudioManager.init(this.game);
 
     if (this.hero) {
       this.game.camera.follow(this.hero, Phaser.Camera.FOLLOW_PLATFORMER);
     }
+
+    // Level intro overlay
+    this._showLevelIntro(levelData);
   },
 
   update: function () {
     if (!this.hero) return;
 
+    // Skip update during intro
+    if (this._introActive) return;
+
     // Parallax scrolling
     if (this._bgFar) this._bgFar.tilePosition.x = this.game.camera.x * 0.05;
     if (this._bgMid) this._bgMid.tilePosition.x = this.game.camera.x * 0.2;
     if (this._bgNear) this._bgNear.tilePosition.x = this.game.camera.x * 0.4;
+
+    // Level timer
+    this.game.time.events.add(0, function () {}, this); // keeps timer ticking
+    this.levelTime += this.game.time.physicsElapsed;
 
     // Collisions
     this.game.physics.arcade.collide(this.hero, this.platforms);
@@ -100,8 +110,14 @@ NS.Game.prototype = {
     // Kunai vs enemies
     this.game.physics.arcade.overlap(this.kunais, this.enemies, function (kunai, enemy) {
       kunai.kill();
-      if (enemy.takeDamage) enemy.takeDamage();
-      else enemy.kill();
+      if (enemy.takeDamage) {
+        var dead = enemy.hp <= 1;
+        enemy.takeDamage();
+        if (dead) NS.Player.onEnemyKill(this, enemy.x, enemy.y);
+      } else {
+        NS.Player.onEnemyKill(this, enemy.x, enemy.y);
+        enemy.kill();
+      }
     }, null, this);
 
     // Kunai vs platforms
@@ -133,15 +149,74 @@ NS.Game.prototype = {
       this._checkFallingPlatforms();
     }
 
+    // Combo timer decay — reset after 2s of no kills
+    if (this.comboCount > 0 && this.game.time.now - this.comboTimer > 2000) {
+      this.comboCount = 0;
+    }
+
     // HUD
     NS.HUD.update(this);
+  },
+
+  _showLevelIntro: function (levelData) {
+    var game = this.game;
+    this._introActive = true;
+    var levelNames = ['', 'Bamboo Forest', 'Village Outskirts', 'Demon Cave', 'Shadow Castle', 'Throne Room'];
+
+    // Dark overlay
+    var overlay = game.add.graphics(0, 0);
+    overlay.fixedToCamera = true;
+    overlay.beginFill(0x000000, 0.85);
+    overlay.drawRect(0, 0, 960, 540);
+    overlay.endFill();
+
+    // Level number
+    var numText = game.add.text(480, 200, 'LEVEL ' + this.levelNum, {
+      font: 'bold 48px monospace', fill: '#e63946',
+      stroke: '#000', strokeThickness: 4
+    });
+    numText.anchor.set(0.5);
+    numText.fixedToCamera = true;
+
+    // Level name
+    var nameText = game.add.text(480, 260, levelNames[this.levelNum] || '', {
+      font: '20px monospace', fill: '#aaaaaa'
+    });
+    nameText.anchor.set(0.5);
+    nameText.fixedToCamera = true;
+    nameText.alpha = 0;
+    game.add.tween(nameText).to({ alpha: 1 }, 400, null, true, 300);
+
+    // Controls hint (level 1 only)
+    if (this.levelNum === 1) {
+      var controlsText = game.add.text(480, 340,
+        'WASD/Arrows: Move   SPACE: Jump\nZ: Dash   X: Throw Kunai', {
+        font: '14px monospace', fill: '#666666', align: 'center'
+      });
+      controlsText.anchor.set(0.5);
+      controlsText.fixedToCamera = true;
+      controlsText.alpha = 0;
+      game.add.tween(controlsText).to({ alpha: 1 }, 400, null, true, 600);
+    }
+
+    // Fade out and start game
+    game.time.events.add(1800, function () {
+      var fadeOut = game.add.tween(overlay).to({ alpha: 0 }, 400, null, true);
+      game.add.tween(numText).to({ alpha: 0 }, 400, null, true);
+      game.add.tween(nameText).to({ alpha: 0 }, 400, null, true);
+      fadeOut.onComplete.add(function () {
+        overlay.destroy();
+        numText.destroy();
+        nameText.destroy();
+        this._introActive = false;
+      }, this);
+    }, this);
   },
 
   _checkFallingPlatforms: function () {
     var hero = this.hero;
     this.fallingPlatformList.forEach(function (plat) {
       if (plat.isFalling || !plat.body) return;
-      // Check if hero is standing on this platform
       var heroBottom = hero.body.y + hero.body.height;
       var platTop = plat.body.y;
       if (hero.body.touching.down &&
@@ -169,8 +244,7 @@ NS.Game.prototype = {
 
   _onCoinCollect: function (hero, coin) {
     coin.kill();
-    this.coinCount++;
-    NS.AudioManager.play('coin');
+    NS.Player.onCoinCollect(this, coin.x, coin.y);
   },
 
   _onCollectible: function (hero, item) {
@@ -180,7 +254,7 @@ NS.Game.prototype = {
       NS.AudioManager.play('key');
     } else if (item.itemType === 'star') {
       item.kill();
-      this.starCount++;
+      NS.Player.onStarCollect(this, item.x, item.y);
       NS.AudioManager.play('star');
     } else if (item.itemType === 'door') {
       if (this.hasKey && hero.body.touching.down) {
@@ -194,9 +268,12 @@ NS.Game.prototype = {
   _onEnemyContact: function (hero, enemy) {
     if (this.invincible) return;
     if (hero.body.velocity.y > 0 && hero.body.y + hero.body.height - 10 < enemy.body.y) {
+      // Stomp kill
+      var willDie = enemy.hp <= 1;
       if (enemy.takeDamage) enemy.takeDamage();
-      else enemy.kill();
+      else { enemy.kill(); willDie = true; }
       hero.body.velocity.y = -NS.Player.JUMP_SPEED / 2;
+      if (willDie) NS.Player.onEnemyKill(this, enemy.x, enemy.y);
     } else {
       NS.Player.kill(this);
     }
@@ -204,7 +281,7 @@ NS.Game.prototype = {
 
   _nextLevel: function () {
     if (this.levelNum >= 5) {
-      this.game.state.start('Victory');
+      this.game.state.start('Victory', true, false, { score: this.score || 0 });
     } else {
       this.game.state.start('Game', true, false, { level: this.levelNum + 1 });
     }

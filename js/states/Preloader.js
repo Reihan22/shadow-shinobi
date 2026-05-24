@@ -1,5 +1,6 @@
-NS.Preloader = function (game) {};
+var NS = NS || {};
 
+NS.Preloader = function (game) {};
 NS.Preloader.prototype = {
   preload: function () {
     for (var i = 1; i <= 5; i++) {
@@ -7,10 +8,7 @@ NS.Preloader.prototype = {
     }
     var style = { font: '24px monospace', fill: '#e63946' };
     this.loadingText = this.game.add.text(
-      this.game.world.centerX,
-      this.game.world.centerY,
-      'Loading...',
-      style
+      this.game.world.centerX, this.game.world.centerY, 'Loading...', style
     );
     this.loadingText.anchor.set(0.5);
   },
@@ -21,13 +19,20 @@ NS.Preloader.prototype = {
   _generatePlaceholders: function () {
     var g = this.game;
 
+    // --- Particle textures (tiny colored squares) ---
+    this._makeParticle('particle_white', '#ffffff');
+    this._makeParticle('particle_red', '#ff2222');
+    this._makeParticle('particle_yellow', '#ffd700');
+    this._makeParticle('particle_orange', '#ff8800');
+    this._makeParticle('particle_purple', '#aa44ff');
+    this._makeParticle('particle_cyan', '#00eeff');
+
     // --- Ground tile (dirt with grass top) ---
     var gnd = g.make.bitmapData(32, 32);
     gnd.ctx.fillStyle = '#5C4033';
     gnd.ctx.fillRect(0, 0, 32, 32);
     gnd.ctx.fillStyle = '#3B2D1F';
     gnd.ctx.fillRect(0, 16, 32, 16);
-    // Grass top
     gnd.ctx.fillStyle = '#2d6a2d';
     gnd.ctx.fillRect(0, 0, 32, 6);
     gnd.ctx.fillStyle = '#3a8a3a';
@@ -49,29 +54,23 @@ NS.Preloader.prototype = {
     var ninja = g.make.bitmapData(nW, nH);
     for (var nf = 0; nf < 12; nf++) {
       var nx = nf * 32;
-      // Body
       ninja.ctx.fillStyle = '#1a1a2e';
       ninja.ctx.fillRect(nx + 10, 8, 12, 16);
-      // Head
       ninja.ctx.fillStyle = '#2a2a3e';
       ninja.ctx.beginPath();
       ninja.ctx.arc(nx + 16, 8, 7, 0, Math.PI * 2);
       ninja.ctx.fill();
-      // Headband
       ninja.ctx.fillStyle = '#e63946';
       ninja.ctx.fillRect(nx + 9, 5, 14, 3);
-      if (nf >= 4 && nf <= 7) { // running — band flowing
+      if (nf >= 4 && nf <= 7) {
         ninja.ctx.fillRect(nx + 23, 5, 6, 2);
       }
-      // Eye
       ninja.ctx.fillStyle = '#ffffff';
       ninja.ctx.fillRect(nx + 12, 7, 4, 2);
-      // Legs (animate based on frame)
       ninja.ctx.fillStyle = '#1a1a2e';
       var legOffset = (nf % 4) * 2;
       ninja.ctx.fillRect(nx + 10, 24, 5, 8 - legOffset);
       ninja.ctx.fillRect(nx + 17, 24 + legOffset, 5, 8 - legOffset);
-      // Arm + sword
       ninja.ctx.fillStyle = '#c0c0c0';
       ninja.ctx.fillRect(nx + 22, 12, 8, 2);
     }
@@ -88,15 +87,12 @@ NS.Preloader.prototype = {
       ronin.ctx.beginPath();
       ronin.ctx.arc(rx + 16, 7, 7, 0, Math.PI * 2);
       ronin.ctx.fill();
-      // Hat
       ronin.ctx.fillStyle = '#3a3a48';
       ronin.ctx.fillRect(rx + 6, 2, 20, 4);
       ronin.ctx.fillRect(rx + 10, 0, 12, 3);
-      // Eyes (red)
       ronin.ctx.fillStyle = '#e63946';
       ronin.ctx.fillRect(rx + 12, 6, 3, 2);
       ronin.ctx.fillRect(rx + 17, 6, 3, 2);
-      // Legs
       ronin.ctx.fillStyle = '#4a4a58';
       var rleg = (rf % 4) * 2;
       ronin.ctx.fillRect(rx + 10, 24, 5, 8 - rleg);
@@ -113,7 +109,6 @@ NS.Preloader.prototype = {
       bat.ctx.beginPath();
       bat.ctx.arc(bx + 12, 12, 5, 0, Math.PI * 2);
       bat.ctx.fill();
-      // Wings
       bat.ctx.fillStyle = '#9333EA';
       var wingY = (bf % 2 === 0) ? 6 : 10;
       bat.ctx.beginPath();
@@ -128,7 +123,6 @@ NS.Preloader.prototype = {
       bat.ctx.lineTo(bx + 20, 14);
       bat.ctx.closePath();
       bat.ctx.fill();
-      // Eyes
       bat.ctx.fillStyle = '#ff0000';
       bat.ctx.fillRect(bx + 9, 11, 2, 2);
       bat.ctx.fillRect(bx + 14, 11, 2, 2);
@@ -138,17 +132,14 @@ NS.Preloader.prototype = {
     // --- Oni Demon sprite sheet (4 frames, 48x48) ---
     var oW = 48 * 4;
     var oni = g.make.bitmapData(oW, 48);
-    for (var of = 0; of < 4; of++) {
-      var ox = of * 48;
-      // Body (big, menacing)
+    for (var ofr = 0; ofr < 4; ofr++) {
+      var ox = ofr * 48;
       oni.ctx.fillStyle = '#8B0000';
       oni.ctx.fillRect(ox + 10, 14, 28, 26);
-      // Head
       oni.ctx.fillStyle = '#A00000';
       oni.ctx.beginPath();
       oni.ctx.arc(ox + 24, 14, 12, 0, Math.PI * 2);
       oni.ctx.fill();
-      // Horns
       oni.ctx.fillStyle = '#FFD700';
       oni.ctx.beginPath();
       oni.ctx.moveTo(ox + 14, 6);
@@ -162,16 +153,13 @@ NS.Preloader.prototype = {
       oni.ctx.lineTo(ox + 30, 4);
       oni.ctx.closePath();
       oni.ctx.fill();
-      // Eyes (glowing)
       oni.ctx.fillStyle = '#FFFF00';
       oni.ctx.fillRect(ox + 18, 12, 4, 4);
       oni.ctx.fillRect(ox + 28, 12, 4, 4);
-      // Mouth
       oni.ctx.fillStyle = '#FFD700';
       oni.ctx.fillRect(ox + 19, 20, 10, 3);
-      // Legs
       oni.ctx.fillStyle = '#8B0000';
-      var oleg = (of % 4) * 3;
+      var oleg = (ofr % 4) * 3;
       oni.ctx.fillRect(ox + 12, 40, 8, 8 - oleg);
       oni.ctx.fillRect(ox + 28, 40 + oleg, 8, 8 - oleg);
     }
@@ -182,9 +170,6 @@ NS.Preloader.prototype = {
     var coin = g.make.bitmapData(cW, 22);
     for (var cf = 0; cf < 4; cf++) {
       var cxx = cf * 22;
-      var scaleX = [1, 0.7, 0.3, 0.7][cf];
-      var cwid = Math.max(2, Math.round(20 * scaleX));
-      var cxo = 11 - cwid / 2;
       coin.ctx.fillStyle = '#FFD700';
       coin.ctx.beginPath();
       coin.ctx.arc(cxx + 11, 11, 10, 0, Math.PI * 2);
@@ -193,7 +178,6 @@ NS.Preloader.prototype = {
       coin.ctx.beginPath();
       coin.ctx.arc(cxx + 11, 11, 6, 0, Math.PI * 2);
       coin.ctx.fill();
-      // ¥ symbol
       coin.ctx.fillStyle = '#FFD700';
       coin.ctx.font = 'bold 10px monospace';
       coin.ctx.fillText('$', cxx + 7, 15);
@@ -226,19 +210,15 @@ NS.Preloader.prototype = {
     var door = g.make.bitmapData(dW, 66);
     for (var df = 0; df < 2; df++) {
       var dx = df * 42;
-      // Frame
       door.ctx.fillStyle = '#654321';
       door.ctx.fillRect(dx, 0, 42, 66);
-      // Panels
       door.ctx.fillStyle = df === 0 ? '#8B6914' : '#A07828';
       door.ctx.fillRect(dx + 4, 4, 34, 28);
       door.ctx.fillRect(dx + 4, 36, 34, 26);
-      // Handle
       door.ctx.fillStyle = '#FFD700';
       door.ctx.beginPath();
       door.ctx.arc(dx + 34, 36, 3, 0, Math.PI * 2);
       door.ctx.fill();
-      // Carved pattern
       door.ctx.strokeStyle = '#654321';
       door.ctx.lineWidth = 1;
       door.ctx.strokeRect(dx + 8, 8, 26, 20);
@@ -303,7 +283,6 @@ NS.Preloader.prototype = {
     fp.ctx.fillRect(0, 0, 64, 16);
     fp.ctx.fillStyle = '#8B4513';
     fp.ctx.fillRect(0, 0, 64, 4);
-    // Cracks
     fp.ctx.strokeStyle = '#6B3410';
     fp.ctx.lineWidth = 1;
     fp.ctx.beginPath();
@@ -318,7 +297,6 @@ NS.Preloader.prototype = {
     mp.ctx.fillRect(0, 0, 96, 16);
     mp.ctx.fillStyle = '#808080';
     mp.ctx.fillRect(0, 0, 96, 4);
-    // Metallic bolts
     mp.ctx.fillStyle = '#A9A9A9';
     mp.ctx.beginPath(); mp.ctx.arc(10, 8, 3, 0, Math.PI * 2); mp.ctx.fill();
     mp.ctx.beginPath(); mp.ctx.arc(48, 8, 3, 0, Math.PI * 2); mp.ctx.fill();
@@ -327,6 +305,12 @@ NS.Preloader.prototype = {
   },
 
   // --- Helper methods ---
+  _makeParticle: function (key, color) {
+    var bmd = this.game.make.bitmapData(4, 4);
+    bmd.ctx.fillStyle = color;
+    bmd.ctx.fillRect(0, 0, 4, 4);
+    this.game.cache.addImage(key, null, bmd.canvas);
+  },
   _makePlatform: function (key, w, h) {
     var bmd = this.game.make.bitmapData(w, h);
     bmd.ctx.fillStyle = '#5C4033';
@@ -346,7 +330,7 @@ NS.Preloader.prototype = {
     bmd.ctx.beginPath();
     for (var i = 0; i < 5; i++) {
       var angle = (i * 4 * Math.PI / 5) - Math.PI / 2;
-      var r = (i === 0) ? 11 : 11;
+      var r = 11;
       var method = (i === 0) ? 'moveTo' : 'lineTo';
       bmd.ctx[method](12 + Math.cos(angle) * r, 12 + Math.sin(angle) * r);
       var innerAngle = angle + 2 * Math.PI / 5;
@@ -414,18 +398,15 @@ NS.Preloader.prototype = {
   _makeBgLayer: function (key, color1, color2, mountainAlpha) {
     var W = 960, H = 540;
     var bmd = this.game.make.bitmapData(W, H);
-    // Gradient sky
     var grd = bmd.ctx.createLinearGradient(0, 0, 0, H);
     grd.addColorStop(0, color1);
     grd.addColorStop(1, color2);
     bmd.ctx.fillStyle = grd;
     bmd.ctx.fillRect(0, 0, W, H);
-    // Stars
     bmd.ctx.fillStyle = 'rgba(255,255,255,0.06)';
     for (var i = 0; i < 80; i++) {
       bmd.ctx.fillRect(Math.random() * W, Math.random() * H * 0.6, 1, 1);
     }
-    // Mountain/layer silhouette
     bmd.ctx.fillStyle = 'rgba(0,0,0,' + mountainAlpha + ')';
     bmd.ctx.beginPath();
     bmd.ctx.moveTo(0, H);
@@ -438,7 +419,6 @@ NS.Preloader.prototype = {
     bmd.ctx.lineTo(W, H);
     bmd.ctx.closePath();
     bmd.ctx.fill();
-    // Bottom ground hint
     bmd.ctx.fillStyle = 'rgba(20,15,10,0.3)';
     bmd.ctx.fillRect(0, H - 60, W, 60);
     this.game.cache.addImage(key, null, bmd.canvas);

@@ -15,5 +15,7 @@ NS.Bat.prototype = Object.create(NS.Enemy.prototype);
 NS.Bat.prototype.constructor = NS.Bat;
 
 NS.Bat.prototype.update = function () {
-  this.body.y = this.startY + Math.sin(this.game.time.now / 500) * 40;
+  if (!this.body || !this.body.enable) return;
+  // Sine wave Y motion overlay
+  this.body.position.y = this.startY + Math.sin(this.game.time.now / 500) * 40;
 };

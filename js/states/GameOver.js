@@ -1,6 +1,9 @@
 NS.GameOver = function (game) {};
 
 NS.GameOver.prototype = {
+  init: function (data) {
+    this.finalScore = (data && data.score) || 0;
+  },
   create: function () {
     var g = this.game;
     var cx = g.world.centerX, cy = g.world.centerY;
@@ -32,25 +35,31 @@ NS.GameOver.prototype = {
     title.anchor.set(0.5);
     title.setShadow(0, 0, 'rgba(230,57,70,0.5)', 25);
 
+    // Score display
+    var scoreText = g.add.text(cx, cy, 'Score: ' + this.finalScore, {
+      font: 'bold 24px monospace', fill: '#FFD700'
+    });
+    scoreText.anchor.set(0.5);
+    scoreText.alpha = 0;
+    g.add.tween(scoreText).to({ alpha: 1 }, 1000, null, true, 500);
+
     // Subtitle
-    var sub = g.add.text(cx, cy, 'The shadow falls...', {
-      font: '20px monospace', fill: '#8b949e'
+    var sub = g.add.text(cx, cy + 40, 'The shadow falls...', {
+      font: '18px monospace', fill: '#8b949e'
     });
     sub.anchor.set(0.5);
     sub.alpha = 0;
-
-    // Fade in subtitle
-    g.add.tween(sub).to({ alpha: 1 }, 1500, null, true, 500);
+    g.add.tween(sub).to({ alpha: 1 }, 1500, null, true, 800);
 
     // Restart prompt
-    var restart = g.add.text(cx, cy + 60, 'Press ENTER to Try Again', {
+    var restart = g.add.text(cx, cy + 80, 'Press ENTER to Try Again', {
       font: '18px monospace', fill: '#ffffff'
     });
     restart.anchor.set(0.5);
     g.add.tween(restart).to({ alpha: [0.3, 1] }, 1000, null, true, 0, -1);
 
     // Menu prompt
-    var menu = g.add.text(cx, cy + 90, 'Press ESC for Menu', {
+    var menu = g.add.text(cx, cy + 110, 'Press ESC for Menu', {
       font: '14px monospace', fill: '#484f58'
     });
     menu.anchor.set(0.5);

@@ -1,6 +1,9 @@
 NS.Victory = function (game) {};
 
 NS.Victory.prototype = {
+  init: function (data) {
+    this.finalScore = (data && data.score) || 0;
+  },
   create: function () {
     var g = this.game;
     var cx = g.world.centerX, cy = g.world.centerY;
@@ -31,33 +34,39 @@ NS.Victory.prototype = {
     }
 
     // Title
-    var title = g.add.text(cx, cy - 100, 'VICTORY', {
+    var title = g.add.text(cx, cy - 120, 'VICTORY', {
       font: '80px monospace', fill: '#FFD700', stroke: '#8B6914', strokeThickness: 6
     });
     title.anchor.set(0.5);
     title.setShadow(0, 0, 'rgba(255,215,0,0.5)', 30);
 
+    // Score
+    var scoreText = g.add.text(cx, cy - 30, 'Final Score: ' + this.finalScore, {
+      font: 'bold 28px monospace', fill: '#FFD700'
+    });
+    scoreText.anchor.set(0.5);
+
     // Subtitle
-    var sub = g.add.text(cx, cy - 20, 'The Shadow Shinobi has restored honor', {
+    var sub = g.add.text(cx, cy + 10, 'The Shadow Shinobi has restored honor', {
       font: '18px monospace', fill: '#C0C0C0'
     });
     sub.anchor.set(0.5);
 
     // Decorative line
-    var line = g.add.graphics(cx - 150, cy + 10);
+    var line = g.add.graphics(cx - 150, cy + 40);
     line.lineStyle(2, 0xFFD700, 0.6);
     line.moveTo(0, 0);
     line.lineTo(300, 0);
 
     // Play again
-    var restart = g.add.text(cx, cy + 50, 'Press ENTER to Play Again', {
+    var restart = g.add.text(cx, cy + 70, 'Press ENTER to Play Again', {
       font: '18px monospace', fill: '#ffffff'
     });
     restart.anchor.set(0.5);
     g.add.tween(restart).to({ alpha: [0.3, 1] }, 1200, null, true, 0, -1);
 
     // Credits
-    var credits = g.add.text(cx, cy + 100, 'A Shadow Shinobi Production', {
+    var credits = g.add.text(cx, cy + 120, 'A Shadow Shinobi Production', {
       font: '12px monospace', fill: '#484f58'
     });
     credits.anchor.set(0.5);

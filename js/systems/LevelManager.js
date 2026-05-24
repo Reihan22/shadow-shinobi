@@ -68,12 +68,17 @@ NS.LevelManager = {
       });
     }
 
-    // Coins
+    // Coins (with bob animation)
     data.coins.forEach(function (c) {
       var coin = gameState.coins.create(c.x, c.y, 'coin');
       coin.anchor.set(0.5);
       game.physics.enable(coin);
       coin.body.allowGravity = false;
+      coin.animations.add('spin', [0, 1, 2, 3], 8, true);
+      coin.animations.play('spin');
+      // Bob up/down
+      game.add.tween(coin)
+        .to({ y: c.y - 6 }, 800, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
     });
 
     // Enemies
