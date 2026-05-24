@@ -99,7 +99,7 @@ NS.Player = {
       } else {
         hero.alive = true;
         hero.body.collideWorldBounds = true;
-        hero.reset(50, 400);
+        hero.reset(gameState.heroSpawnX, gameState.heroSpawnY);
         hero.body.velocity.set(0);
         gameState.invincible = true;
         var blink = gameState.game.add.tween(hero)

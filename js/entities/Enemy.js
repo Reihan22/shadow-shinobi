@@ -16,8 +16,8 @@ NS.Enemy.prototype.takeDamage = function () {
   if (this.hp <= 0) {
     this.kill();
   } else {
-    this.tint = 0xffffff;
-    this.game.time.events.add(100, function () {
+    this.tint = 0xff0000;
+    this.game.time.events.add(150, function () {
       this.tint = 0xffffff;
     }, this);
   }

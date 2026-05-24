@@ -9,6 +9,8 @@ NS.Game.prototype = {
     this.hasKey = false;
     this.invincible = false;
     this.kunaiCooldown = false;
+    this.heroSpawnX = 50;
+    this.heroSpawnY = 400;
   },
 
   create: function () {
@@ -35,7 +37,11 @@ NS.Game.prototype = {
       }
     }
 
-    NS.LevelManager.load(this, this.levelNum);
+    var levelData = NS.LevelManager.load(this, this.levelNum);
+    if (levelData && levelData.hero) {
+      this.heroSpawnX = levelData.hero.x;
+      this.heroSpawnY = levelData.hero.y;
+    }
     NS.HUD.create(this);
     NS.AudioManager.init(this.game);
 
@@ -89,12 +95,13 @@ NS.Game.prototype = {
 
     // Enemy wall bounce
     this.enemies.forEachAlive(function (enemy) {
-      if (!enemy.body) return;
+      if (!enemy.body || !enemy.body.enable) return;
+      var speed = Math.abs(enemy.body.velocity.x) || 80;
       if (enemy.body.touching.right || enemy.body.blocked.right) {
-        enemy.body.velocity.x = -Math.abs(enemy.body.velocity.x || 0);
+        enemy.body.velocity.x = -speed;
         enemy.scale.x = -1;
       } else if (enemy.body.touching.left || enemy.body.blocked.left) {
-        enemy.body.velocity.x = Math.abs(enemy.body.velocity.x || 0);
+        enemy.body.velocity.x = speed;
         enemy.scale.x = 1;
       }
     });

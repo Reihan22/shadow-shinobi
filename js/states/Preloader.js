@@ -66,6 +66,6 @@ NS.Preloader.prototype = {
       bmd.ctx.fillRect(i * fw + 8, 8, 3, 3);
       bmd.ctx.fillRect(i * fw + 16, 8, 3, 3);
     }
-    this.game.cache.addImage(key, null, bmd.canvas);
+    this.game.cache.addSpriteSheet(key, null, bmd.canvas, fw, fh);
   }
 };
