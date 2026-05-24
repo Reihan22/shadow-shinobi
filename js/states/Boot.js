@@ -9,7 +9,9 @@ NS.Boot.prototype = {
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.scale.pageAlignHorizontally = true;
     this.game.scale.pageAlignVertically = true;
+    this.game.scale.parentIsWindow = false;
     this.game.scale.refresh();
+    this.game.stage.backgroundColor = '#0a0a2e';
     this.game.state.start('Preloader');
   }
 };
