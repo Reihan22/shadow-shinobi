@@ -44,9 +44,7 @@ NS.Player = {
     // Game state
     gameState.comboCount = 0;
     gameState.comboTimer = 0;
-    gameState.score = 0;
     gameState.levelTime = 0;
-    gameState.enemiesKilled = 0;
 
     // Emitters
     gameState.dashEmitter = NS.Player._makeEmitter(game, 'particle_white', 20, 0, 400);

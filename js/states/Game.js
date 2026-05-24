@@ -3,9 +3,11 @@ NS.Game = function (game) {};
 NS.Game.prototype = {
   init: function (data) {
     this.levelNum = (data && data.level) || 1;
-    this.coinCount = 0;
-    this.starCount = 0;
-    this.lives = 3;
+    this.coinCount = (data && data.coinCount) || 0;
+    this.starCount = (data && data.starCount) || 0;
+    this.lives = (data && data.lives) || 3;
+    this.score = (data && data.score) || 0;
+    this.enemiesKilled = (data && data.enemiesKilled) || 0;
     this.hasKey = false;
     this.invincible = false;
     this.kunaiCooldown = false;
@@ -281,9 +283,16 @@ NS.Game.prototype = {
 
   _nextLevel: function () {
     if (this.levelNum >= 5) {
-      this.game.state.start('Victory', true, false, { score: this.score || 0 });
+      this.game.state.start('Victory', true, false, { score: this.score });
     } else {
-      this.game.state.start('Game', true, false, { level: this.levelNum + 1 });
+      this.game.state.start('Game', true, false, {
+        level: this.levelNum + 1,
+        score: this.score,
+        lives: this.lives,
+        coinCount: this.coinCount,
+        starCount: this.starCount,
+        enemiesKilled: this.enemiesKilled
+      });
     }
   }
 };
